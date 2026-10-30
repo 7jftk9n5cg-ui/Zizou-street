@@ -1,0 +1,6 @@
+{
+  "name": "Zizou Boutique",
+  "description": "Boutique officielle de prêt-à-porter féminin élégant et moderne. Collections intemporelles en beige, ivoire et matières nobles avec support bilingue Français et Arabe.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
