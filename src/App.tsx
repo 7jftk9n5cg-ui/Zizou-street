@@ -101,6 +101,13 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
+  // استرجاع وتغيير كلمة المرور
+  const [resetMode, setResetMode] = useState(false);
+  const [recoveryMode, setRecoveryMode] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -143,9 +150,103 @@ export default function App() {
     loadProducts();
   }, []);
 
+  // استقبال رابط استرجاع كلمة المرور من Supabase
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setRecoveryMode(true);
+        setResetMode(false);
+        setAdminOpen(true);
+        setSelectedProduct(null);
+      }
+    });
+
+    return () => {
+      data.subscription.unsubscribe();
+    };
+  }, []);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [selectedProduct, adminOpen, page]);
+
+  // إرسال رابط استرجاع كلمة المرور
+  async function handleForgotPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!adminEmail.trim()) {
+      alert('Veuillez saisir votre adresse e-mail.');
+      return;
+    }
+
+    setResetLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        adminEmail.trim(),
+        {
+          redirectTo: window.location.origin
+        }
+      );
+
+      if (error) throw error;
+
+      alert('Un lien de réinitialisation a été envoyé à votre adresse e-mail.');
+      setResetMode(false);
+    } catch (error) {
+      const message = error instanceof Error
+        ? error.message
+        : 'Une erreur est survenue.';
+
+      alert('Erreur : ' + message);
+    } finally {
+      setResetLoading(false);
+    }
+  }
+
+  // حفظ كلمة المرور الجديدة
+  async function handleUpdatePassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (newPassword.length < 6) {
+      alert('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert('Les mots de passe ne correspondent pas.');
+      return;
+    }
+
+    setResetLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      await supabase.auth.signOut();
+
+      setRecoveryMode(false);
+      setResetMode(false);
+      setAdminLoggedIn(false);
+      setAdminPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+
+      alert('Mot de passe modifié avec succès. Connectez-vous avec votre nouveau mot de passe.');
+    } catch (error) {
+      const message = error instanceof Error
+        ? error.message
+        : 'Une erreur est survenue.';
+
+      alert('Erreur : ' + message);
+    } finally {
+      setResetLoading(false);
+    }
+  }
 
   async function handleAdminLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -226,6 +327,8 @@ export default function App() {
   function goBack() {
     setSelectedProduct(null);
     setAdminOpen(false);
+    setResetMode(false);
+    setRecoveryMode(false);
   }
 
   function resetForm() {
@@ -446,7 +549,7 @@ export default function App() {
         .full-field { grid-column: 1 / -1; }
         .order-summary { grid-column: 1 / -1; display: flex; justify-content: space-between; padding: 18px 0; border-top: 1px solid #eee; }
         .submit-order { grid-column: 1 / -1; padding: 17px; background: #111; color: white; border: 0; font-weight: bold; letter-spacing: 1px; }
-        .submit-order:disabled { opacity: .5; }
+        .submit-order:disabled { opacity: .5; cursor: not-allowed; }
         .related-section { margin-top: 60px; }
         .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .site-footer { padding: 35px 5%; background: #111; color: white; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; font-size: 11px; letter-spacing: 1px; }
@@ -456,6 +559,7 @@ export default function App() {
         .admin-login-card { max-width: 650px; margin: 35px auto; padding: 30px; border: 1px solid #eee; }
         .admin-intro, .admin-note { color: #777; font-size: 13px; line-height: 1.6; }
         .admin-form { grid-template-columns: 1fr; margin-top: 25px; }
+        .forgot-button { display: block; margin: 15px auto 0; padding: 10px; border: 0; background: transparent; color: #555; text-decoration: underline; font-size: 13px; }
         .admin-dashboard { max-width: 1000px; margin: 25px auto; }
         .admin-top { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 25px; }
         .admin-top h1 { font-size: 26px; }
@@ -506,7 +610,81 @@ export default function App() {
             ← RETOUR À LA BOUTIQUE
           </button>
 
-          {!adminLoggedIn ? (
+          {recoveryMode ? (
+            <div className="admin-login-card">
+              <p className="eyebrow">SÉCURITÉ DU COMPTE</p>
+              <h1>NOUVEAU MOT DE PASSE</h1>
+              <p className="admin-intro">
+                Choisissez un nouveau mot de passe pour votre compte administrateur.
+              </p>
+
+              <form className="admin-form" onSubmit={handleUpdatePassword}>
+                <label>
+                  Nouveau mot de passe
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="Minimum 6 caractères"
+                  />
+                </label>
+
+                <label>
+                  Confirmer le mot de passe
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Confirmez le mot de passe"
+                  />
+                </label>
+
+                <button className="submit-order" type="submit" disabled={resetLoading}>
+                  {resetLoading ? 'ENREGISTREMENT...' : 'CHANGER LE MOT DE PASSE'}
+                </button>
+              </form>
+            </div>
+          ) : resetMode ? (
+            <div className="admin-login-card">
+              <p className="eyebrow">RÉCUPÉRATION DU COMPTE</p>
+              <h1>MOT DE PASSE OUBLIÉ</h1>
+              <p className="admin-intro">
+                Saisissez votre adresse e-mail. Nous vous enverrons un lien pour réinitialiser votre mot de passe.
+              </p>
+
+              <form className="admin-form" onSubmit={handleForgotPassword}>
+                <label>
+                  Adresse e-mail
+                  <input
+                    type="email"
+                    required
+                    value={adminEmail}
+                    onChange={e => setAdminEmail(e.target.value)}
+                    placeholder="Votre adresse e-mail"
+                    autoComplete="email"
+                  />
+                </label>
+
+                <button className="submit-order" type="submit" disabled={resetLoading}>
+                  {resetLoading ? 'ENVOI...' : 'ENVOYER LE LIEN'}
+                </button>
+
+                <button
+                  type="button"
+                  className="admin-logout"
+                  onClick={() => setResetMode(false)}
+                >
+                  RETOUR À LA CONNEXION
+                </button>
+              </form>
+            </div>
+          ) : !adminLoggedIn ? (
             <div className="admin-login-card">
               <p className="eyebrow">ESPACE PRIVÉ</p>
               <h1>ADMIN LOGIN</h1>
@@ -543,6 +721,15 @@ export default function App() {
                   {loginLoading ? 'CONNEXION...' : 'SE CONNECTER'}
                 </button>
               </form>
+
+              <button
+                type="button"
+                className="forgot-button"
+                onClick={() => setResetMode(true)}
+              >
+                Mot de passe oublié ?
+              </button>
+
               <p className="admin-note">Accès réservé à l'administrateur autorisé.</p>
             </div>
           ) : (
