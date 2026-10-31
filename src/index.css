@@ -602,3 +602,69 @@ button {
     transition-duration: .01ms !important;
   }
 }
+
+/* ZIZOU STREET - CLEAN CATALOG */
+.collection-heading {
+  display: none !important;
+}
+
+.collection-page {
+  max-width: 1200px !important;
+  padding: 20px 6% 70px !important;
+}
+
+.product-grid,
+.related-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 24px 16px !important;
+}
+
+.product-card {
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+.product-image-wrap {
+  aspect-ratio: 4 / 4.5 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+.product-image-wrap img {
+  object-fit: cover;
+}
+
+.product-card-info {
+  padding-top: 9px !important;
+}
+
+.product-card-info h2 {
+  font-size: 10px !important;
+}
+
+.product-card-info p {
+  font-size: 10px !important;
+}
+
+@media (max-width: 700px) {
+  .collection-page {
+    padding: 12px 5% 50px !important;
+  }
+
+  .product-grid,
+  .related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px 12px !important;
+  }
+
+  .product-image-wrap {
+    aspect-ratio: 4 / 4.5 !important;
+  }
+}
