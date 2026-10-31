@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const WHATSAPP_NUMBER = '213540044167';
 
@@ -13,6 +13,8 @@ const products = [
 ];
 
 export default function App() {
+  const [selectedProduct, setSelectedProduct] = useState<typeof products[number] | null>(null);
+
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -26,6 +28,12 @@ export default function App() {
     document.querySelectorAll('.reveal').forEach((item) => observer.observe(item));
     return () => observer.disconnect();
   }, []);
+
+  const whatsappLink = selectedProduct
+    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+        `Hello ZIZOU STREET! I want to order: ${selectedProduct.name} - ${selectedProduct.price}`
+      )}`
+    : '#';
 
   return (
     <main className="page">
@@ -47,27 +55,65 @@ export default function App() {
         </div>
 
         <div className="product-grid">
-          {products.map((product) => {
-            const message = `Hello ZIZOU STREET! I want to order: ${product.name} - ${product.price}`;
-            const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-            return (
-              <article className="product reveal" key={product.id}>
-                <div className="product-image">
-                  <img src={product.image} alt={product.name} loading="lazy" />
-                </div>
-                <div className="product-info">
-                  <h3>{product.name}</h3>
-                  <p>{product.price}</p>
-                </div>
-                <a className="order-button" href={whatsappLink} target="_blank" rel="noreferrer">
-                  ORDER ON WHATSAPP
-                </a>
-              </article>
-            );
-          })}
+          {products.map((product) => (
+            <article
+              className="product reveal"
+              key={product.id}
+              onClick={() => setSelectedProduct(product)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setSelectedProduct(product);
+              }}
+            >
+              <div className="product-image">
+                <img src={product.image} alt={product.name} loading="lazy" />
+              </div>
+              <div className="product-info">
+                <h3>{product.name}</h3>
+                <p>{product.price}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
+
+      {selectedProduct && (
+        <div className="product-overlay" onClick={() => setSelectedProduct(null)}>
+          <section
+            className="product-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close-modal"
+              onClick={() => setSelectedProduct(null)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+            <img
+              className="modal-image"
+              src={selectedProduct.image}
+              alt={selectedProduct.name}
+            />
+
+            <div className="modal-details">
+              <p className="eyebrow">ZIZOU STREET COLLECTION</p>
+              <h2>{selectedProduct.name}</h2>
+              <p className="modal-price">{selectedProduct.price}</p>
+              <a
+                className="order-button"
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+              >
+                ORDER ON WHATSAPP
+              </a>
+            </div>
+          </section>
+        </div>
+      )}
 
       <footer className="footer">
         <strong>ZIZOU STREET</strong>
