@@ -488,3 +488,117 @@ button {
     letter-spacing: 1px;
   }
 }
+
+/* Smooth animations everywhere */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  transition: transform .25s ease, opacity .25s ease, background .25s ease, color .25s ease;
+}
+
+.product-card {
+  animation: productReveal .7s ease both;
+}
+
+.product-card:nth-child(2) { animation-delay: .08s; }
+.product-card:nth-child(3) { animation-delay: .16s; }
+.product-card:nth-child(4) { animation-delay: .24s; }
+.product-card:nth-child(5) { animation-delay: .32s; }
+.product-card:nth-child(6) { animation-delay: .40s; }
+
+.product-card:active {
+  transform: scale(.97);
+}
+
+.product-image-wrap img {
+  transition: transform .65s cubic-bezier(.2,.7,.2,1);
+}
+
+.product-card:hover img {
+  transform: scale(1.045);
+}
+
+.detail-page {
+  animation: detailReveal .55s cubic-bezier(.2,.7,.2,1) both;
+}
+
+.detail-photo img {
+  transition: transform .7s ease;
+}
+
+.detail-photo:active img {
+  transform: scale(1.015);
+}
+
+.option-button {
+  transition: all .25s ease;
+}
+
+.option-button:active {
+  transform: scale(.92);
+}
+
+.submit-order {
+  transition: all .3s ease;
+}
+
+.submit-order:active {
+  transform: scale(.98);
+}
+
+.back-button:active,
+.brand:active {
+  opacity: .55;
+  transform: scale(.96);
+}
+
+.order-form label {
+  animation: formReveal .5s ease both;
+}
+
+.order-form label:nth-child(2) { animation-delay: .06s; }
+.order-form label:nth-child(3) { animation-delay: .12s; }
+.order-form label:nth-child(4) { animation-delay: .18s; }
+.order-form label:nth-child(5) { animation-delay: .24s; }
+
+@keyframes productReveal {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes detailReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes formReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
