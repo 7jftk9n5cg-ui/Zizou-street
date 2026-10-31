@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from 'react';
+import { supabase } from './lib/supabase';
 
 const WHATSAPP_NUMBER = '213540044167';
 
@@ -31,8 +31,10 @@ const wilayas = [
 export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<typeof products[number] | null>(null);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const [size, setSize] = useState('');
   const [color, setColor] = useState('');
@@ -56,6 +58,57 @@ export default function App() {
   function goBack() {
     setSelectedProduct(null);
     setAdminOpen(false);
+  }
+
+  async function handleAdminLogin(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoginLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: adminEmail.trim(),
+        password: adminPassword,
+      });
+
+      if (error) throw error;
+
+      if (!data.user?.email) {
+        throw new Error('Impossible de vérifier votre compte.');
+      }
+
+      const { data: admin, error: adminError } = await supabase
+        .from('admins')
+        .select('email')
+        .eq('email', data.user.email)
+        .maybeSingle();
+
+      if (adminError) {
+        await supabase.auth.signOut();
+        throw adminError;
+      }
+
+      if (!admin) {
+        await supabase.auth.signOut();
+        throw new Error("Ce compte n'a pas les autorisations administrateur.");
+      }
+
+      setAdminLoggedIn(true);
+      setAdminPassword('');
+    } catch (error) {
+      const message = error instanceof Error
+        ? error.message
+        : 'Une erreur est survenue.';
+      alert('Échec de connexion : ' + message);
+    } finally {
+      setLoginLoading(false);
+    }
+  }
+
+  async function handleAdminLogout() {
+    await supabase.auth.signOut();
+    setAdminLoggedIn(false);
+    setAdminEmail('');
+    setAdminPassword('');
   }
 
   function submitOrder(event: React.FormEvent<HTMLFormElement>) {
@@ -101,50 +154,60 @@ export default function App() {
 
           <div className="admin-login-card">
             <p className="eyebrow">ESPACE PRIVÉ</p>
-            <h1>ADMIN LOGIN</h1>
-            <p className="admin-intro">
-              Connectez-vous pour gérer la boutique ZIZOU STREET.
-            </p>
+            <h1>{adminLoggedIn ? 'ADMIN DASHBOARD' : 'ADMIN LOGIN'}</h1>
 
-            <form
-              className="admin-form"
-              onSubmit={(event) => {
-                event.preventDefault();
-                alert('La connexion sera activée après la configuration de Supabase.');
-              }}
-            >
-              <label>
-                Adresse e-mail
-                <input
-                  type="email"
-                  required
-                  value={adminEmail}
-                  onChange={(event) => setAdminEmail(event.target.value)}
-                  placeholder="Votre adresse e-mail"
-                  autoComplete="username"
-                />
-              </label>
+            {adminLoggedIn ? (
+              <>
+                <p className="admin-intro">
+                  Bienvenue dans votre espace administrateur ZIZOU STREET.
+                </p>
+                <p>Connexion réussie : {adminEmail}</p>
+                <p>La gestion des produits sera ajoutée prochainement.</p>
+                <button className="submit-order" onClick={handleAdminLogout}>
+                  SE DÉCONNECTER
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="admin-intro">
+                  Connectez-vous pour gérer la boutique ZIZOU STREET.
+                </p>
 
-              <label>
-                Mot de passe
-                <input
-                  type="password"
-                  required
-                  value={adminPassword}
-                  onChange={(event) => setAdminPassword(event.target.value)}
-                  placeholder="Votre mot de passe"
-                  autoComplete="current-password"
-                />
-              </label>
+                <form className="admin-form" onSubmit={handleAdminLogin}>
+                  <label>
+                    Adresse e-mail
+                    <input
+                      type="email"
+                      required
+                      value={adminEmail}
+                      onChange={(event) => setAdminEmail(event.target.value)}
+                      placeholder="Votre adresse e-mail"
+                      autoComplete="username"
+                    />
+                  </label>
 
-              <button className="submit-order" type="submit">
-                SE CONNECTER
-              </button>
-            </form>
+                  <label>
+                    Mot de passe
+                    <input
+                      type="password"
+                      required
+                      value={adminPassword}
+                      onChange={(event) => setAdminPassword(event.target.value)}
+                      placeholder="Votre mot de passe"
+                      autoComplete="current-password"
+                    />
+                  </label>
 
-            <p className="admin-note">
-              La connexion sécurisée et la gestion des produits seront activées après le raccordement à Supabase.
-            </p>
+                  <button className="submit-order" type="submit" disabled={loginLoading}>
+                    {loginLoading ? 'CONNEXION...' : 'SE CONNECTER'}
+                  </button>
+                </form>
+
+                <p className="admin-note">
+                  Accès réservé à l'administrateur autorisé.
+                </p>
+              </>
+            )}
           </div>
         </section>
       ) : !selectedProduct ? (
