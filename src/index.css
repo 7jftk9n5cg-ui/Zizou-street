@@ -668,3 +668,94 @@ button {
     aspect-ratio: 4 / 4.5 !important;
   }
 }
+
+/* ADMIN ACCESS */
+.admin-entry {
+  border: 0;
+  border-bottom: 1px solid #bbb;
+  background: transparent;
+  color: #777;
+  padding: 7px 2px;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.admin-entry:hover {
+  color: #111;
+  border-color: #111;
+}
+
+.admin-page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px 6% 80px;
+  min-height: 65vh;
+}
+
+.admin-login-card {
+  max-width: 440px;
+  margin: 35px auto;
+  padding: 38px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+
+.admin-login-card h1 {
+  margin: 12px 0;
+  font-size: 28px;
+}
+
+.admin-intro,
+.admin-note {
+  color: #777;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.admin-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 25px;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.admin-form input {
+  width: 100%;
+  height: 48px;
+  padding: 0 13px;
+  border: 1px solid #e2e2e2;
+  font: inherit;
+  font-size: 12px;
+}
+
+.admin-form .submit-order {
+  width: 100%;
+}
+
+.admin-note {
+  margin-top: 20px;
+  font-size: 10px;
+}
+
+@media (max-width: 700px) {
+  .admin-page {
+    padding: 20px 5% 50px;
+  }
+
+  .admin-login-card {
+    padding: 26px 18px;
+  }
+
+  .site-footer {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
