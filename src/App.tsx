@@ -4,121 +4,215 @@ import { useEffect, useState } from 'react';
 const WHATSAPP_NUMBER = '213540044167';
 
 const products = [
-  { id: 1, name: 'SPORT T-SHIRT', price: '2 500 DA', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=85' },
-  { id: 2, name: 'SPORT TRACKSUIT', price: '6 500 DA', image: 'https://images.unsplash.com/photo-1551488831-00ddcb6cbd3?auto=format&fit=crop&w=900&q=85' },
-  { id: 3, name: 'SPORT HOODIE', price: '4 800 DA', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=85' },
-  { id: 4, name: 'SPORT SHORTS', price: '2 200 DA', image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=900&q=85' },
-  { id: 5, name: 'SNEAKERS', price: '7 900 DA', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85' },
-  { id: 6, name: 'JOGGING PANTS', price: '3 900 DA', image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=900&q=85' },
+  { id: 1, name: 'SPORT T-SHIRT', price: '2 500 DA', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=85', description: 'T-shirt sportif confortable pour un style quotidien.', sizes: ['S', 'M', 'L', 'XL'], colors: ['Noir', 'Blanc', 'Gris'] },
+  { id: 2, name: 'SPORT TRACKSUIT', price: '6 500 DA', image: 'https://images.unsplash.com/photo-1551488831-00ddcb6cbd3?auto=format&fit=crop&w=900&q=85', description: 'Ensemble sportif avec une coupe moderne.', sizes: ['M', 'L', 'XL', 'XXL'], colors: ['Noir', 'Gris'] },
+  { id: 3, name: 'SPORT HOODIE', price: '4 800 DA', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=85', description: 'Sweat à capuche confortable et moderne.', sizes: ['S', 'M', 'L', 'XL'], colors: ['Noir', 'Blanc', 'Gris'] },
+  { id: 4, name: 'SPORT SHORTS', price: '2 200 DA', image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=900&q=85', description: 'Short léger idéal pour le sport.', sizes: ['S', 'M', 'L', 'XL'], colors: ['Noir', 'Gris'] },
+  { id: 5, name: 'SNEAKERS', price: '7 900 DA', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85', description: 'Sneakers au design sportif et confortable.', sizes: ['40', '41', '42', '43', '44'], colors: ['Noir', 'Blanc', 'Rouge'] },
+  { id: 6, name: 'JOGGING PANTS', price: '3 900 DA', image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=900&q=85', description: 'Pantalon jogging avec une coupe décontractée.', sizes: ['S', 'M', 'L', 'XL'], colors: ['Noir', 'Gris'] },
+];
+
+const wilayas = [
+  'Adrar', 'Chlef', 'Laghouat', 'Oum El Bouaghi', 'Batna',
+  'Béjaïa', 'Biskra', 'Béchar', 'Blida', 'Bouira',
+  'Tamanrasset', 'Tébessa', 'Tlemcen', 'Tiaret', 'Tizi Ouzou',
+  'Alger', 'Djelfa', 'Jijel', 'Sétif', 'Saïda',
+  'Skikda', 'Sidi Bel Abbès', 'Annaba', 'Guelma', 'Constantine',
+  'Médéa', 'Mostaganem', 'M’Sila', 'Mascara', 'Ouargla',
+  'Oran', 'El Bayadh', 'Illizi', 'Bordj Bou Arréridj', 'Boumerdès',
+  'El Tarf', 'Tindouf', 'Tissemsilt', 'El Oued', 'Khenchela',
+  'Souk Ahras', 'Tipaza', 'Mila', 'Aïn Defla', 'Naâma',
+  'Aïn Témouchent', 'Ghardaïa', 'Relizane', 'Timimoun',
+  'Bordj Badji Mokhtar', 'Ouled Djellal', 'Béni Abbès',
+  'In Salah', 'In Guezzam', 'Touggourt', 'Djanet',
+  'El M’Ghair', 'El Meniaa'
 ];
 
 export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<typeof products[number] | null>(null);
+  const [size, setSize] = useState('');
+  const [color, setColor] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [wilaya, setWilaya] = useState('');
+  const [city, setCity] = useState('');
+  const [address, setAddress] = useState('');
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedProduct]);
 
-    document.querySelectorAll('.reveal').forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
-  }, []);
+  function openProduct(product: typeof products[number]) {
+    setSelectedProduct(product);
+    setSize('');
+    setColor('');
+  }
 
-  const whatsappLink = selectedProduct
-    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-        `Hello ZIZOU STREET! I want to order: ${selectedProduct.name} - ${selectedProduct.price}`
-      )}`
-    : '#';
+  function goBack() {
+    setSelectedProduct(null);
+  }
+
+  function submitOrder(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!selectedProduct || !size || !color) {
+      alert('Veuillez choisir la taille et la couleur.');
+      return;
+    }
+
+    const message = [
+      '🛍️ NOUVELLE COMMANDE - ZIZOU STREET',
+      '',
+      `Produit: ${selectedProduct.name}`,
+      `Prix: ${selectedProduct.price}`,
+      `Taille: ${size}`,
+      `Couleur: ${color}`,
+      '',
+      `Nom: ${firstName}`,
+      `Téléphone: ${phone}`,
+      `Wilaya: ${wilaya}`,
+      `Commune: ${city}`,
+      `Adresse: ${address || 'Non précisée'}`,
+      '',
+      'Merci !'
+    ].join('\n');
+
+    window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  }
 
   return (
-    <main className="page">
-      <header className="header">
-        <a className="logo" href="#">ZIZOU <span>STREET</span></a>
-        <span className="header-note">SPORTSWEAR</span>
+    <main className="store">
+      <header className="site-header">
+        <button className="brand" onClick={goBack}>ZIZOU STREET</button>
+        <span className="header-caption">SPORT & STREETWEAR</span>
       </header>
 
-      <section className="intro">
-        <p className="eyebrow">NEW COLLECTION</p>
-        <h1>Move in your style.</h1>
-        <p className="intro-copy">Discover your everyday sportswear essentials.</p>
-      </section>
+      {!selectedProduct ? (
+        <section className="collection-page">
+          <div className="collection-heading">
+            <p className="eyebrow">NEW COLLECTION</p>
+            <h1>OUR PRODUCTS</h1>
+            <p>Discover your style.</p>
+          </div>
 
-      <section className="catalog">
-        <div className="section-heading">
-          <h2>Our Collection</h2>
-          <span>06 PRODUCTS</span>
-        </div>
+          <div className="product-grid">
+            {products.map((product) => (
+              <button className="product-card" key={product.id} onClick={() => openProduct(product)}>
+                <div className="product-image-wrap">
+                  <img src={product.image} alt={product.name} />
+                  <span className="view-product">VIEW PRODUCT ↗</span>
+                </div>
+                <div className="product-card-info">
+                  <h2>{product.name}</h2>
+                  <p>{product.price}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section className="detail-page">
+          <button className="back-button" onClick={goBack}>← BACK TO COLLECTION</button>
 
-        <div className="product-grid">
-          {products.map((product) => (
-            <article
-              className="product reveal"
-              key={product.id}
-              onClick={() => setSelectedProduct(product)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') setSelectedProduct(product);
-              }}
-            >
-              <div className="product-image">
-                <img src={product.image} alt={product.name} loading="lazy" />
-              </div>
-              <div className="product-info">
-                <h3>{product.name}</h3>
-                <p>{product.price}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+          <div className="detail-layout">
+            <div className="detail-photo">
+              <img src={selectedProduct.image} alt={selectedProduct.name} />
+            </div>
 
-      {selectedProduct && (
-        <div className="product-overlay" onClick={() => setSelectedProduct(null)}>
-          <section
-            className="product-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="close-modal"
-              onClick={() => setSelectedProduct(null)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-
-            <img
-              className="modal-image"
-              src={selectedProduct.image}
-              alt={selectedProduct.name}
-            />
-
-            <div className="modal-details">
+            <div className="detail-info">
               <p className="eyebrow">ZIZOU STREET COLLECTION</p>
-              <h2>{selectedProduct.name}</h2>
-              <p className="modal-price">{selectedProduct.price}</p>
-              <a
-                className="order-button"
-                href={whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-              >
-                ORDER ON WHATSAPP
-              </a>
+              <h1>{selectedProduct.name}</h1>
+              <p className="detail-price">{selectedProduct.price}</p>
+              <p className="detail-description">{selectedProduct.description}</p>
+
+              <div className="option-group">
+                <h3>SELECT SIZE</h3>
+                <div className="option-list">
+                  {selectedProduct.sizes.map((item) => (
+                    <button type="button" key={item} className={`option-button ${size === item ? 'active' : ''}`} onClick={() => setSize(item)}>
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="option-group">
+                <h3>SELECT COLOR</h3>
+                <div className="option-list">
+                  {selectedProduct.colors.map((item) => (
+                    <button type="button" key={item} className={`option-button ${color === item ? 'active' : ''}`} onClick={() => setColor(item)}>
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="product-features">
+                <p>✓ Qualité et confort</p>
+                <p>✓ Paiement à la livraison</p>
+                <p>✓ Livraison disponible</p>
+              </div>
+            </div>
+          </div>
+
+          <section className="checkout-section">
+            <div className="checkout-heading">
+              <p className="eyebrow">CASH ON DELIVERY</p>
+              <h2>COMMANDER MAINTENANT</h2>
+              <p>Remplissez vos informations pour confirmer votre commande sur WhatsApp.</p>
+            </div>
+
+            <form className="order-form" onSubmit={submitOrder}>
+              <label>Nom et prénom
+                <input required value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Votre nom complet" />
+              </label>
+              <label>Numéro de téléphone
+                <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05 XX XX XX XX" />
+              </label>
+              <label>Wilaya
+                <select required value={wilaya} onChange={(e) => setWilaya(e.target.value)}>
+                  <option value="">Choisir votre wilaya</option>
+                  {wilayas.map((item) => <option key={item} value={item}>{item}</option>)}
+                </select>
+              </label>
+              <label>Commune
+                <input required value={city} onChange={(e) => setCity(e.target.value)} placeholder="Votre commune" />
+              </label>
+              <label className="full-field">Adresse (facultatif)
+                <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Votre adresse" />
+              </label>
+
+              <div className="order-summary">
+                <span>{selectedProduct.name}</span>
+                <strong>{selectedProduct.price}</strong>
+              </div>
+
+              <button className="submit-order" type="submit">CONFIRMER SUR WHATSAPP ↗</button>
+            </form>
+          </section>
+
+          <section className="related-section">
+            <h2>YOU MAY ALSO LIKE</h2>
+            <div className="related-grid">
+              {products.filter((item) => item.id !== selectedProduct.id).slice(0, 3).map((item) => (
+                <button className="product-card" key={item.id} onClick={() => openProduct(item)}>
+                  <div className="product-image-wrap">
+                    <img src={item.image} alt={item.name} />
+                  </div>
+                  <div className="product-card-info">
+                    <h2>{item.name}</h2>
+                    <p>{item.price}</p>
+                  </div>
+                </button>
+              ))}
             </div>
           </section>
-        </div>
+        </section>
       )}
 
-      <footer className="footer">
-        <strong>ZIZOU STREET</strong>
-        <p>SPORTSWEAR FOR EVERY DAY</p>
-        <span>© 2026 ZIZOU STREET</span>
+      <footer className="site-footer">
+        <p>ZIZOU STREET</p>
+        <span>© 2026 — ALL RIGHTS RESERVED</span>
       </footer>
     </main>
   );
