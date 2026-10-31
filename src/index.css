@@ -1,35 +1,256 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --font-serif: 'Playfair Display', Georgia, serif;
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-arabic: 'Amiri', Georgia, serif;
+:root {
+  font-family: 'DM Sans', Arial, sans-serif;
+  color: #171717;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #ffffff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page {
+  width: min(100% - 40px, 1240px);
+  margin: 0 auto;
+}
+
+.header {
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ededed;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -1.4px;
+}
+
+.logo span {
+  font-weight: 400;
+}
+
+.header-note,
+.eyebrow,
+.section-heading span,
+.footer p,
+.footer span {
+  font-size: 10px;
+  letter-spacing: 1.7px;
+  color: #777;
+}
+
+.intro {
+  padding: 76px 0 58px;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  font-weight: 700;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -2.8px;
+  font-weight: 700;
+}
+
+.intro-copy {
+  color: #777;
+  font-size: 14px;
+  margin: 16px 0 0;
+}
+
+.catalog {
+  padding-bottom: 92px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.section-heading h2 {
+  font-size: 18px;
+  letter-spacing: -.5px;
+  margin: 0;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 34px 18px;
+}
+
+.product {
+  min-width: 0;
+}
+
+.product-image {
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+  aspect-ratio: 4 / 5;
+  border-radius: 2px;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .55s cubic-bezier(.2,.7,.2,1);
+}
+
+.product:hover .product-image img {
+  transform: scale(1.045);
+}
+
+.product-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding-top: 13px;
+}
+
+.product-info h3 {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.product-info p {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.footer {
+  border-top: 1px solid #ededed;
+  padding: 32px 0 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.footer strong {
+  font-size: 15px;
+  letter-spacing: -.5px;
+}
+
+.footer p,
+.footer span {
+  margin: 0;
+  font-size: 9px;
+}
+
+@media (max-width: 700px) {
+  .page {
+    width: min(100% - 28px, 1240px);
   }
 
-  [dir="rtl"] {
-    font-family: var(--font-arabic), var(--font-sans);
+  .header {
+    height: 70px;
   }
 
-  body {
-    background-color: #FBF9F5;
-    color: #24211E;
-    font-family: var(--font-sans);
+  .logo {
+    font-size: 22px;
   }
 
-  [dir="rtl"] .font-serif,
-  [dir="rtl"] h1,
-  [dir="rtl"] h2,
-  [dir="rtl"] h3,
-  [dir="rtl"] h4 {
-    font-family: var(--font-arabic), serif;
+  .header-note {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .intro {
+    padding: 58px 0 42px;
+  }
+
+  .intro h1 {
+    letter-spacing: -1.8px;
+  }
+
+  .intro-copy {
+    font-size: 12px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px 11px;
+  }
+
+  .product-info {
+    display: block;
+    padding-top: 10px;
+  }
+
+  .product-info h3 {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+
+  .product-info p {
+    font-size: 12px;
+  }
+
+  .section-heading h2 {
+    font-size: 16px;
+  }
+
+  .footer {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
 }
 
-.font-serif-luxury {
-  font-family: var(--font-serif);
-}
-
-.font-arabic-luxury {
-  font-family: var(--font-arabic);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
 }
