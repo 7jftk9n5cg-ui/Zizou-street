@@ -30,6 +30,10 @@ const wilayas = [
 
 export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<typeof products[number] | null>(null);
+  const [adminOpen, setAdminOpen] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+
   const [size, setSize] = useState('');
   const [color, setColor] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -40,16 +44,18 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [selectedProduct]);
+  }, [selectedProduct, adminOpen]);
 
   function openProduct(product: typeof products[number]) {
     setSelectedProduct(product);
+    setAdminOpen(false);
     setSize('');
     setColor('');
   }
 
   function goBack() {
     setSelectedProduct(null);
+    setAdminOpen(false);
   }
 
   function submitOrder(event: React.FormEvent<HTMLFormElement>) {
@@ -87,7 +93,61 @@ export default function App() {
         <span className="header-caption">SPORT & STREETWEAR</span>
       </header>
 
-      {!selectedProduct ? (
+      {adminOpen ? (
+        <section className="admin-page">
+          <button className="back-button" onClick={goBack}>
+            ← RETOUR À LA BOUTIQUE
+          </button>
+
+          <div className="admin-login-card">
+            <p className="eyebrow">ESPACE PRIVÉ</p>
+            <h1>ADMIN LOGIN</h1>
+            <p className="admin-intro">
+              Connectez-vous pour gérer la boutique ZIZOU STREET.
+            </p>
+
+            <form
+              className="admin-form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                alert('La connexion sera activée après la configuration de Supabase.');
+              }}
+            >
+              <label>
+                Adresse e-mail
+                <input
+                  type="email"
+                  required
+                  value={adminEmail}
+                  onChange={(event) => setAdminEmail(event.target.value)}
+                  placeholder="Votre adresse e-mail"
+                  autoComplete="username"
+                />
+              </label>
+
+              <label>
+                Mot de passe
+                <input
+                  type="password"
+                  required
+                  value={adminPassword}
+                  onChange={(event) => setAdminPassword(event.target.value)}
+                  placeholder="Votre mot de passe"
+                  autoComplete="current-password"
+                />
+              </label>
+
+              <button className="submit-order" type="submit">
+                SE CONNECTER
+              </button>
+            </form>
+
+            <p className="admin-note">
+              La connexion sécurisée et la gestion des produits seront activées après le raccordement à Supabase.
+            </p>
+          </div>
+        </section>
+      ) : !selectedProduct ? (
         <section className="collection-page">
           <div className="collection-heading">
             <p className="eyebrow">NEW COLLECTION</p>
@@ -212,6 +272,12 @@ export default function App() {
 
       <footer className="site-footer">
         <p>ZIZOU STREET</p>
+        <button className="admin-entry" onClick={() => {
+          setSelectedProduct(null);
+          setAdminOpen(true);
+        }}>
+          ADMIN
+        </button>
         <span>© 2026 — ALL RIGHTS RESERVED</span>
       </footer>
     </main>
