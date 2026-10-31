@@ -254,3 +254,36 @@ a {
     animation-duration: .01ms !important;
   }
 }
+
+.order-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 8px;
+  background: #171717;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border: 1px solid #171717;
+  transition: all .25s ease;
+}
+
+.order-button:hover {
+  background: #fff;
+  color: #171717;
+}
+
+.order-button:active {
+  transform: scale(.97);
+}
+
+@media (max-width: 700px) {
+  .order-button {
+    font-size: 9px;
+    padding: 11px 5px;
+    letter-spacing: .5px;
+  }
+}
